@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 void main() {
@@ -26,27 +26,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  List<dynamic> _nbaStats = [];
 
   static List<Widget> _widgetOptions = <Widget>[
     MediaPage(),
     LikedMediaPage(),
     AboutPage(),
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadNbaStats();
-  }
-
-  Future<void> _loadNbaStats() async {
-    final String response = await rootBundle.loadString('assets/api/nba2024stats.json');
-    final data = await json.decode(response);
-    setState(() {
-      _nbaStats = data;
-    });
-  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -86,20 +71,105 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class MediaPage extends StatelessWidget {
-  final List<Media> mediaList = [
-    Media(id: 1, title: 'Media 1', category: 'Video', imageUrl: 'https://via.placeholder.com/150', liked: false),
-    Media(id: 2, title: 'Media 2', category: 'Article', imageUrl: 'https://via.placeholder.com/150', liked: false),
-    // Ajoutez plus de médias ici
-  ];
+class PlayerStats {
+  final String player;
+  final String team;
+  final String pos;
+  final double points;
+  final double assists;
+  final double rebounds;
+  final String imageFileName; 
+
+  PlayerStats({
+    required this.player,
+    required this.team,
+    required this.pos,
+    required this.points,
+    required this.assists,
+    required this.rebounds,
+    required this.imageFileName, 
+  });
+
+  factory PlayerStats.fromJson(Map<String, dynamic> json) {
+    return PlayerStats(
+      player: json['Player'],
+      team: json['Team'],
+      pos: json['Pos'],
+      points: (json['PTS'] as num).toDouble(),
+      assists: (json['AST'] as num).toDouble(),
+      rebounds: (json['TRB'] as num).toDouble(),
+      imageFileName: json['Image'], 
+    );
+  }
+}
+
+class MediaPage extends StatefulWidget {
+  @override
+  _MediaPageState createState() => _MediaPageState();
+}
+
+class _MediaPageState extends State<MediaPage> {
+  late Future<List<PlayerStats>> futureStats;
+
+  @override
+  void initState() {
+    super.initState();
+    futureStats = loadStats();
+  }
+
+  Future<List<PlayerStats>> loadStats() async {
+    final String response = await rootBundle.loadString('assets/api/nba2024stats.json');
+    final List<dynamic> data = json.decode(response);
+    return data.map((json) => PlayerStats.fromJson(json)).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: mediaList.length,
-      itemBuilder: (context, index) {
-        return MediaCard(media: mediaList[index]);
+    return FutureBuilder<List<PlayerStats>>(
+      future: futureStats,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Erreur de chargement des données'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('Aucune donnée disponible'));
+        }
+
+        final players = snapshot.data!;
+
+        return ListView.builder(
+          itemCount: players.length,
+          itemBuilder: (context, index) {
+            return PlayerCard(player: players[index]);
+          },
+        );
       },
+    );
+  }
+}
+
+class PlayerCard extends StatelessWidget {
+  final PlayerStats player;
+
+  PlayerCard({required this.player});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: Image.asset('assets/images/${player.imageFileName}'), 
+        title: Text(player.player),
+        subtitle: Text('${player.team} - ${player.pos}'),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('PTS: ${player.points.toStringAsFixed(1)}'),
+            Text('AST: ${player.assists.toStringAsFixed(1)}'),
+            Text('REB: ${player.rebounds.toStringAsFixed(1)}'),
+          ],
+        ),
+      ),
     );
   }
 }
