@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_avif/flutter_avif.dart'; 
 
 void main() {
   runApp(MyApp());
@@ -78,7 +79,8 @@ class PlayerStats {
   final double points;
   final double assists;
   final double rebounds;
-  final String imageFileName; 
+  final String imageFileName;
+  bool liked;
 
   PlayerStats({
     required this.player,
@@ -88,6 +90,7 @@ class PlayerStats {
     required this.assists,
     required this.rebounds,
     required this.imageFileName, 
+    this.liked = false,
   });
 
   factory PlayerStats.fromJson(Map<String, dynamic> json) {
@@ -158,9 +161,17 @@ class PlayerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: Image.asset('assets/images/${player.imageFileName}'), 
-        title: Text(player.player),
-        subtitle: Text('${player.team} - ${player.pos}'),
+        leading: player.imageFileName.endsWith('.avif')
+            ? AvifImage.asset('assets/images/${player.imageFileName}')
+            : Image.asset('assets/images/${player.imageFileName}'),
+        title: Text(
+          player.player,
+          style: TextStyle(fontSize: 14.0), 
+        ),
+        subtitle: Text(
+          '${player.team} - ${player.pos}',
+          style: TextStyle(fontSize: 12.0), 
+        ),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
