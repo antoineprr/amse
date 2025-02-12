@@ -17,7 +17,7 @@ def get_player_image(player_id):
     return None
 
 # Fonction pour télécharger et sauvegarder l'image
-def download_image(url, player_name, save_directory):
+def download_image(url, player_name, player_id, save_directory):
     if not url:
         print(f"No image URL for player {player_name}")
         return
@@ -27,7 +27,7 @@ def download_image(url, player_name, save_directory):
         os.makedirs(save_directory)
     
     # Obtenir le nom du fichier à partir de l'URL
-    file_name = f"{player_name.replace(' ', '_')}.png"  # Remplace les espaces par des underscores
+    file_name = f"{player_id}.png"  # Remplace les espaces par des underscores
     file_path = os.path.join(save_directory, file_name)
     
     # Télécharger l'image
@@ -51,4 +51,4 @@ for player in players_data:
     player_id = player['PLAYER_ID']
     player_name = player['PLAYER']
     image_url = get_player_image(player_id)
-    download_image(image_url, player_name, save_directory)
+    download_image(image_url, player_name, player_id, save_directory)

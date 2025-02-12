@@ -1,268 +1,104 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_avif/flutter_avif.dart'; 
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'NBA Media',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return ChangeNotifierProvider(
+      create: (context) => MyAppState(),
+      child: MaterialApp(
+        title: 'Media Management App',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        ),
+        home: MyHomePage(),
       ),
-      home: HomePage(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
+class MyAppState extends ChangeNotifier {
+
 }
 
-class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
 
-  static List<Widget> _widgetOptions = <Widget>[
-    MediaPage(),
-    LikedMediaPage(),
-    AboutPage(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+class _MyHomePageState extends State<MyHomePage> {
+  var selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    Widget page;
+    switch (selectedIndex) {
+      case 0:
+        page = HomePage();
+        break;
+      case 1:
+        page = MediaPage();
+        break;
+      case 2:
+        page = AboutPage();
+        break;
+      default:
+        throw UnimplementedError('no widget for $selectedIndex');
+    }
     return Scaffold(
-      appBar: AppBar(
-        title: Text('NBA Media'),
-      ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
+      body: page,
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        currentIndex: selectedIndex,
+        onTap: (index) {
+          setState(() {
+            selectedIndex = index;
+          });
+        },
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Liked',
+            icon: Icon(Icons.photo),
+            label: 'Media',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.info),
             label: 'About',
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
       ),
     );
   }
 }
 
-class PlayerStats {
-  final String player;
-  final String team;
-  final String pos;
-  final double points;
-  final double assists;
-  final double rebounds;
-  final String imageFileName;
-  bool liked;
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
 
-  PlayerStats({
-    required this.player,
-    required this.team,
-    required this.pos,
-    required this.points,
-    required this.assists,
-    required this.rebounds,
-    required this.imageFileName, 
-    this.liked = false,
-  });
-
-  factory PlayerStats.fromJson(Map<String, dynamic> json) {
-    return PlayerStats(
-      player: json['Player'],
-      team: json['Team'],
-      pos: json['Pos'],
-      points: (json['PTS'] as num).toDouble(),
-      assists: (json['AST'] as num).toDouble(),
-      rebounds: (json['TRB'] as num).toDouble(),
-      imageFileName: json['Image'], 
+    return Center(
+      child: Text('Home Page'),
     );
   }
 }
 
-class MediaPage extends StatefulWidget {
-  @override
-  _MediaPageState createState() => _MediaPageState();
-}
 
-class _MediaPageState extends State<MediaPage> {
-  late Future<List<PlayerStats>> futureStats;
-
-  @override
-  void initState() {
-    super.initState();
-    futureStats = loadStats();
-  }
-
-  Future<List<PlayerStats>> loadStats() async {
-    final String response = await rootBundle.loadString('assets/api/nba2024stats.json');
-    final List<dynamic> data = json.decode(response);
-    return data.map((json) => PlayerStats.fromJson(json)).toList();
-  }
-
+class MediaPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<PlayerStats>>(
-      future: futureStats,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Erreur de chargement des données'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('Aucune donnée disponible'));
-        }
+    var appState = context.watch<MyAppState>();
 
-        final players = snapshot.data!;
-
-        return ListView.builder(
-          itemCount: players.length,
-          itemBuilder: (context, index) {
-            return PlayerCard(player: players[index]);
-          },
-        );
-      },
-    );
-  }
-}
-
-class PlayerCard extends StatelessWidget {
-  final PlayerStats player;
-
-  PlayerCard({required this.player});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: player.imageFileName.endsWith('.avif')
-            ? AvifImage.asset('assets/images/${player.imageFileName}')
-            : Image.asset('assets/images/${player.imageFileName}'),
-        title: Text(
-          player.player,
-          style: TextStyle(fontSize: 14.0), 
-        ),
-        subtitle: Text(
-          '${player.team} - ${player.pos}',
-          style: TextStyle(fontSize: 12.0), 
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('PTS: ${player.points.toStringAsFixed(1)}'),
-            Text('AST: ${player.assists.toStringAsFixed(1)}'),
-            Text('REB: ${player.rebounds.toStringAsFixed(1)}'),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class MediaCard extends StatefulWidget {
-  final Media media;
-
-  MediaCard({required this.media});
-
-  @override
-  _MediaCardState createState() => _MediaCardState();
-}
-
-class _MediaCardState extends State<MediaCard> {
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: Image.network(widget.media.imageUrl),
-        title: Text(widget.media.title),
-        subtitle: Text(widget.media.category),
-        trailing: IconButton(
-          icon: Icon(
-            widget.media.liked ? Icons.favorite : Icons.favorite_border,
-            color: widget.media.liked ? Colors.red : null,
-          ),
-          onPressed: () {
-            setState(() {
-              widget.media.liked = !widget.media.liked;
-            });
-          },
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MediaDetailPage(media: widget.media),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class MediaDetailPage extends StatelessWidget {
-  final Media media;
-
-  MediaDetailPage({required this.media});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(media.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Image.network(media.imageUrl),
-            Text(media.category),
-            // Ajoutez plus de détails ici
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class LikedMediaPage extends StatelessWidget {
-  final List<Media> likedMediaList = [
-    // Ajoutez les médias likés ici
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: likedMediaList.length,
-      itemBuilder: (context, index) {
-        return MediaCard(media: likedMediaList[index]);
-      },
+    return Center(
+      child: Text('Media Page'),
     );
   }
 }
@@ -270,24 +106,10 @@ class LikedMediaPage extends StatelessWidget {
 class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    
     return Center(
-      child: Text('About NBA Media App'),
+      child: Text('About Page'),
     );
   }
-}
-
-class Media {
-  final int id;
-  final String title;
-  final String category;
-  final String imageUrl;
-  bool liked;
-
-  Media({
-    required this.id,
-    required this.title,
-    required this.category,
-    required this.imageUrl,
-    required this.liked,
-  });
 }
