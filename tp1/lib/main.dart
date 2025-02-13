@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:tp1/player_detail_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,10 +18,10 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
-        title: 'Media Management App',
+        title: "Stats don't lie 🏀",
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+          colorScheme: ColorScheme.fromSeed(seedColor: Color.fromRGBO(200, 16, 46, 1)),
         ),
         home: MyHomePage(),
       ),
@@ -27,9 +29,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyAppState extends ChangeNotifier {
-
-}
+class MyAppState extends ChangeNotifier {}
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -44,20 +44,40 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = MediaPage();
-        break;
-      case 1:
         page = HomePage();
         break;
+      case 1:
+        page = PlayerPage();
+        break;
       case 2:
+        page = TeamPage();
+        break;
+      case 3:
+        page = FavPage();
+        break;
+      case 4:
         page = AboutPage();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(29, 66, 138, 1),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/logo.png',
+              height: 40,
+            ),
+            SizedBox(width: 10),
+          ],
+        ),
+      ),
       body: page,
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: selectedIndex,
         onTap: (index) {
           setState(() {
@@ -70,8 +90,16 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.photo),
-            label: 'Media',
+            icon: Icon(Icons.person),
+            label: 'Players',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.group),
+            label: 'Teams',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.star),
+            label: 'Favorites',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.info),
@@ -156,18 +184,19 @@ class PlayerStats {
       oreb: json['OREB'],
       dreb: json['DREB'],
       pf: json['PF'],
+      // ignore: prefer_interpolation_to_compose_strings
       imageFileName: json['PLAYER_ID'].toString() + '.png',
       liked: json['LIKED'] ?? false,
     );
   }
 }
 
-class MediaPage extends StatefulWidget {
+class PlayerPage extends StatefulWidget {
   @override
-  _MediaPageState createState() => _MediaPageState();
+  _PlayerPageState createState() => _PlayerPageState();
 }
 
-class _MediaPageState extends State<MediaPage> {
+class _PlayerPageState extends State<PlayerPage> {
   late Future<List<PlayerStats>> futureStats;
 
   @override
@@ -227,7 +256,19 @@ class _PlayerCardState extends State<PlayerCard> {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: Image.asset('assets/images/${widget.player.imageFileName}'),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PlayerDetailPage(player: widget.player),
+            ),
+          );
+        },
+        leading: CachedNetworkImage(
+          imageUrl: 'assets/images/players/${widget.player.imageFileName}',
+          placeholder: (context, url) => CircularProgressIndicator(),
+          errorWidget: (context, url, error) => Icon(Icons.error),
+        ),
         title: Text(
           widget.player.player,
           style: TextStyle(fontSize: 14.0),
@@ -242,9 +283,9 @@ class _PlayerCardState extends State<PlayerCard> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('PPG: ${(widget.player.points/widget.player.game).toStringAsFixed(1)}'),
-                Text('APG: ${(widget.player.assists/widget.player.game).toStringAsFixed(1)}'),
-                Text('RPG: ${(widget.player.rebounds/widget.player.game).toStringAsFixed(1)}'),
+                Text('PPG: ${(widget.player.points / widget.player.game).toStringAsFixed(1)}'),
+                Text('APG: ${(widget.player.assists / widget.player.game).toStringAsFixed(1)}'),
+                Text('RPG: ${(widget.player.rebounds / widget.player.game).toStringAsFixed(1)}'),
               ],
             ),
             IconButton(
@@ -265,11 +306,33 @@ class _PlayerCardState extends State<PlayerCard> {
   }
 }
 
+class TeamPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
+    return Center(
+      child: Text('Team Page'),
+    );
+  }
+}
+
+class FavPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
+    return Center(
+      child: Text('Fav Page'),
+    );
+  }
+}
+
 class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    
+
     return Center(
       child: Text('About Page'),
     );
