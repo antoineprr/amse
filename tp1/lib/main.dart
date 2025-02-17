@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tp1/player_detail_page.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 void main() {
   runApp(MyApp());
@@ -306,13 +307,114 @@ class _PlayerCardState extends State<PlayerCard> {
   }
 }
 
-class TeamPage extends StatelessWidget {
+class TeamPage extends StatefulWidget {
+  @override
+  _TeamPageState createState() => _TeamPageState();
+}
+
+class _TeamPageState extends State<TeamPage> {
+  late Future<List<Team>> futureTeams;
+
+  @override
+  void initState() {
+    super.initState();
+    futureTeams = loadTeams();
+  }
+
+  Future<List<Team>> loadTeams() async {
+    try {
+      final String response = await rootBundle.loadString('assets/api/nbaTeams.json');
+      final List<dynamic> data = json.decode(response);
+      return data.map((json) => Team.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Erreur lors du chargement des données: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
+    return FutureBuilder<List<Team>>(
+      future: futureTeams,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          print('Erreur: ${snapshot.error}');
+          return Center(child: Text('Erreur de chargement des données'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(child: Text('Aucune donnée disponible'));
+        }
 
-    return Center(
-      child: Text('Team Page'),
+        final teams = snapshot.data!;
+
+        return ListView.builder(
+          itemCount: teams.length,
+          itemBuilder: (context, index) {
+            return TeamCard(team: teams[index]);
+          },
+        );
+      },
+    );
+  }
+}
+
+class Team {
+  final int id;
+  final String fullName;
+  final String abbreviation;
+  final String nickname;
+  final String city;
+  final String state;
+  final int yearFounded;
+
+  Team({
+    required this.id,
+    required this.fullName,
+    required this.abbreviation,
+    required this.nickname,
+    required this.city,
+    required this.state,
+    required this.yearFounded,
+  });
+
+  factory Team.fromJson(Map<String, dynamic> json) {
+    return Team(
+      id: json['id'],
+      fullName: json['full_name'],
+      abbreviation: json['abbreviation'],
+      nickname: json['nickname'],
+      city: json['city'],
+      state: json['state'],
+      yearFounded: json['year_founded'],
+    );
+  }
+}
+
+class TeamCard extends StatelessWidget {
+  final Team team;
+
+  TeamCard({required this.team});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: SvgPicture.asset(
+          'assets/images/teams/${team.id}.svg',
+          width: 50,
+          height: 50,
+          placeholderBuilder: (context) => CircularProgressIndicator(),
+        ),
+        title: Text(team.fullName),
+        subtitle: Text('${team.city}, ${team.state}'),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Founded: ${team.yearFounded}'),
+            Text('Abbreviation: ${team.abbreviation}'),
+          ],
+        ),
+      ),
     );
   }
 }

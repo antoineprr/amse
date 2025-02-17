@@ -43,19 +43,22 @@ class PlayerDetailPage extends StatelessWidget {
             (team) => team['abbreviation'] == player.team,
             orElse: () => null,
           );
-          if (teamInfo != null) {
+            if (teamInfo != null) {
             return Row(
               children: [
-                SvgPicture.asset(
-                  'images/teams/${teamInfo['id']}.svg',
-                  height: 60,
-                  width: 60,
+              SvgPicture.asset(
+                'images/teams/${teamInfo['id']}.svg',
+                height: 60,
+                width: 60,
+              ),
+              SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                teamInfo['full_name'],
+                style: Theme.of(context).textTheme.titleLarge,
+                overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(width: 16),
-                Text(
-                  teamInfo['full_name'],
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+              ),
               ],
             );
           } else {
