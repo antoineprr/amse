@@ -30,7 +30,21 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyAppState extends ChangeNotifier {}
+class MyAppState extends ChangeNotifier {
+  List<PlayerStats> favorites = [];
+
+  void toggleFavorite(PlayerStats player) {
+    bool isFavorite = favorites.any((p) => p.playerId == player.playerId);
+    if (isFavorite) {
+      favorites.removeWhere((p) => p.playerId == player.playerId);
+      player.liked = false;
+    } else {
+      favorites.add(player);
+      player.liked = true;
+    }
+    notifyListeners();
+  }
+}
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -112,11 +126,34 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Précharger l'image du logo
+    precacheImage(AssetImage('assets/images/logo.png'), context);
+    // Précharger toutes les images des players et des teams
+    _precacheImagesFromDirectory('assets/images/players/');
+    _precacheImagesFromDirectory('assets/images/teams/');
+  }
+
+  void _precacheImagesFromDirectory(String directory) async {
+    final manifestContent = await DefaultAssetBundle.of(context).loadString('AssetManifest.json');
+    final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+    final imagePaths = manifestMap.keys.where((key) => key.startsWith(directory)).toList();
+
+    for (final path in imagePaths) {
+      precacheImage(AssetImage(path), context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
     return Center(
       child: Text('Home Page'),
     );
@@ -187,9 +224,17 @@ class PlayerStats {
       pf: json['PF'],
       // ignore: prefer_interpolation_to_compose_strings
       imageFileName: json['PLAYER_ID'].toString() + '.png',
-      liked: json['LIKED'] ?? false,
+      liked: false,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PlayerStats && runtimeType == other.runtimeType && playerId == other.playerId;
+
+  @override
+  int get hashCode => playerId.hashCode;
 }
 
 class PlayerPage extends StatefulWidget {
@@ -255,20 +300,26 @@ class PlayerCard extends StatefulWidget {
 class _PlayerCardState extends State<PlayerCard> {
   @override
   Widget build(BuildContext context) {
+    bool isFavorite = context
+        .watch<MyAppState>()
+        .favorites
+        .any((p) => p.playerId == widget.player.playerId);
+
     return Card(
       child: ListTile(
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => PlayerDetailPage(player: widget.player),
-            ),
+                builder: (context) =>
+                    PlayerDetailPage(player: widget.player)),
           );
         },
-        leading: CachedNetworkImage(
-          imageUrl: 'assets/images/players/${widget.player.imageFileName}',
-          placeholder: (context, url) => CircularProgressIndicator(),
-          errorWidget: (context, url, error) => Icon(Icons.error),
+        leading: Image.asset(
+          'assets/images/players/${widget.player.imageFileName}',
+          width: 50,
+          height: 50,
+          fit: BoxFit.cover,
         ),
         title: Text(
           widget.player.player,
@@ -291,13 +342,13 @@ class _PlayerCardState extends State<PlayerCard> {
             ),
             IconButton(
               icon: Icon(
-                widget.player.liked ? Icons.favorite : Icons.favorite_border,
-                color: widget.player.liked ? Colors.red : null,
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: isFavorite ? Colors.red : null,
               ),
               onPressed: () {
-                setState(() {
-                  widget.player.liked = !widget.player.liked;
-                });
+                Provider.of<MyAppState>(context, listen: false)
+                    .toggleFavorite(widget.player);
+                setState(() {});
               },
             ),
           ],
@@ -422,10 +473,17 @@ class TeamCard extends StatelessWidget {
 class FavPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
+    var favPlayers = context.watch<MyAppState>().favorites;
 
-    return Center(
-      child: Text('Fav Page'),
+    if (favPlayers.isEmpty) {
+      return Center(child: Text('Aucun favori'));
+    }
+
+    return ListView.builder(
+      itemCount: favPlayers.length,
+      itemBuilder: (context, index) {
+        return PlayerCard(player: favPlayers[index]);
+      },
     );
   }
 }

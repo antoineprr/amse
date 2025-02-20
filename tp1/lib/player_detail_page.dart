@@ -8,26 +8,35 @@ class PlayerDetailPage extends StatelessWidget {
   const PlayerDetailPage({Key? key, required this.player}) : super(key: key);
 
   Widget _buildStatItem(String label, String value) {
-    return Container(
-      width: 120,
-      padding: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(8),
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(fontSize: 16, color: Colors.blueAccent),
-          ),
-        ],
+      elevation: 4,
+      child: Container(
+        width: 120,
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -52,11 +61,19 @@ class PlayerDetailPage extends StatelessWidget {
                 width: 60,
               ),
               SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                teamInfo['full_name'],
-                style: Theme.of(context).textTheme.titleLarge,
-                overflow: TextOverflow.ellipsis,
+                Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                  final double fontSize = constraints.maxWidth < 200 ? 14 : 20;
+                  return Text(
+                    teamInfo['full_name'],
+                    style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontSize: fontSize),
+                    overflow: TextOverflow.ellipsis,
+                  );
+                  },
                 ),
               ),
               ],
