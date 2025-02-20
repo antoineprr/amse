@@ -504,8 +504,8 @@ class TeamCard extends StatelessWidget {
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Founded: ${team.yearFounded}'),
-            Text('Abbreviation: ${team.abbreviation}'),
+            Text('Année de création : ${team.yearFounded}'),
+            Text('Abréviation : ${team.abbreviation}'),
           ],
         ),
       ),

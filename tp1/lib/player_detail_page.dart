@@ -104,60 +104,72 @@ class PlayerDetailPage extends StatelessWidget {
     final double foulsPerGame = player.pf / player.game;
 
     return Scaffold(
+      backgroundColor: Colors.lightBlue[100],
       appBar: AppBar(
-        title: Text(player.player),
+        title: Text(
+          player.player,
+        ),
         centerTitle: true,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  'assets/images/players/${player.imageFileName}',
-                  height: 120,
-                  width: 120,
-                  fit: BoxFit.cover,
-                  filterQuality: FilterQuality.high,
+      body: Theme(
+        data: Theme.of(context).copyWith(
+          textTheme: Theme.of(context).textTheme.apply(fontFamily: 'Courier New'),
+        ),
+        child: ListView(
+          padding: const EdgeInsets.all(16.0),
+          children: [
+            Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(
+                    'assets/images/players/${player.imageFileName}',
+                    height: 120,
+                    width: 120,
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.high,
+                  ),
                 ),
-              ),
-              SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildTeamInfo(context),
-                  ],
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildTeamInfo(context),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          Divider(height: 24, thickness: 2, color: Color.fromRGBO(200, 16, 46, 1),),
-          SizedBox(height: 16),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 16,
-            runSpacing: 16,
-            children: [
-              _buildStatItem("MPG", minutesPerGame.toStringAsFixed(1)),
-              _buildStatItem("PPG", pointsPerGame.toStringAsFixed(1)),
-              _buildStatItem("APG", assistsPerGame.toStringAsFixed(1)),
-              _buildStatItem("RPG", reboundsPerGame.toStringAsFixed(1)),
-              _buildStatItem("FG%", (player.fgPct * 100).toStringAsFixed(1)),
-              _buildStatItem("3P%", (player.fg3Pct * 100).toStringAsFixed(1)),
-              _buildStatItem("FT%", (player.ftPct * 100).toStringAsFixed(1)),
-              _buildStatItem("BPG", blocksPerGame.toStringAsFixed(1)),
-              _buildStatItem("SPG", stealsPerGame.toStringAsFixed(1)),
-              _buildStatItem("TOV", turnoversPerGame.toStringAsFixed(1)),
-              _buildStatItem("ORB", orebPerGame.toStringAsFixed(1)),
-              _buildStatItem("DREB", drebPerGame.toStringAsFixed(1)),
-              _buildStatItem("PF", foulsPerGame.toStringAsFixed(1)),
-            ],
-          )
-        ],
+              ],
+            ),
+            SizedBox(height: 16),
+            Divider(
+              height: 24,
+              thickness: 2,
+              color: Color.fromRGBO(200, 16, 46, 1),
+            ),
+            SizedBox(height: 16),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 16,
+              runSpacing: 16,
+              children: [
+                _buildStatItem("MPG", minutesPerGame.toStringAsFixed(1)),
+                _buildStatItem("PPG", pointsPerGame.toStringAsFixed(1)),
+                _buildStatItem("APG", assistsPerGame.toStringAsFixed(1)),
+                _buildStatItem("RPG", reboundsPerGame.toStringAsFixed(1)),
+                _buildStatItem("FG%", (player.fgPct * 100).toStringAsFixed(1)),
+                _buildStatItem("3P%", (player.fg3Pct * 100).toStringAsFixed(1)),
+                _buildStatItem("FT%", (player.ftPct * 100).toStringAsFixed(1)),
+                _buildStatItem("BPG", blocksPerGame.toStringAsFixed(1)),
+                _buildStatItem("SPG", stealsPerGame.toStringAsFixed(1)),
+                _buildStatItem("TOV", turnoversPerGame.toStringAsFixed(1)),
+                _buildStatItem("ORB", orebPerGame.toStringAsFixed(1)),
+                _buildStatItem("DREB", drebPerGame.toStringAsFixed(1)),
+                _buildStatItem("PF", foulsPerGame.toStringAsFixed(1)),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
