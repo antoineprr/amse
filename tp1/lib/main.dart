@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tp1/player_detail_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MyApp());
@@ -33,6 +33,10 @@ class MyApp extends StatelessWidget {
 class MyAppState extends ChangeNotifier {
   List<PlayerStats> favorites = [];
 
+  MyAppState() {
+    _loadFavorites();
+  }
+
   void toggleFavorite(PlayerStats player) {
     bool isFavorite = favorites.any((p) => p.playerId == player.playerId);
     if (isFavorite) {
@@ -42,7 +46,23 @@ class MyAppState extends ChangeNotifier {
       favorites.add(player);
       player.liked = true;
     }
+    _saveFavorites();
     notifyListeners();
+  }
+
+  Future<void> _saveFavorites() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> favList = favorites.map((p) => jsonEncode(p.toJson())).toList();
+    await prefs.setStringList('favorites', favList);
+  }
+
+  Future<void> _loadFavorites() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? favList = prefs.getStringList('favorites');
+    if (favList != null) {
+      favorites = favList.map((favJson) => PlayerStats.fromJson(jsonDecode(favJson))).toList();
+      notifyListeners();
+    }
   }
 }
 
@@ -226,6 +246,29 @@ class PlayerStats {
       imageFileName: json['PLAYER_ID'].toString() + '.png',
       liked: false,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'PLAYER_ID': playerId,
+      'PLAYER': player,
+      'TEAM': team,
+      'GP': game,
+      'MIN': min,
+      'PTS': points,
+      'AST': assists,
+      'REB': rebounds,
+      'FG_PCT': fgPct,
+      'FG3_PCT': fg3Pct,
+      'FT_PCT': ftPct,
+      'BLK': blk,
+      'STL': stl,
+      'TOV': tov,
+      'OREB': oreb,
+      'DREB': dreb,
+      'PF': pf,
+      'liked': liked,
+    };
   }
 
   @override
