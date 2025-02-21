@@ -73,9 +73,27 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
+  bool _logoLoaded = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(AssetImage('assets/images/logo.png'), context).then((_) {
+      setState(() {
+        _logoLoaded = true;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Afficher une vue de chargement tant que le logo n'est pas disponible
+    if (!_logoLoaded) {
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     Widget page;
     switch (selectedIndex) {
       case 0:
@@ -516,6 +534,7 @@ class _PlayerPageState extends State<PlayerPage> {
             .toList();
 
         int totalPages = (filteredPlayers.length / itemsPerPage).ceil();
+        if (totalPages == 0) totalPages = 1; // pour éviter des problèmes d'index
         if (currentPage >= totalPages) {
           currentPage = totalPages - 1;
         }
@@ -526,6 +545,7 @@ class _PlayerPageState extends State<PlayerPage> {
 
         return Column(
           children: [
+            // Options de filtrage toujours visibles
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -590,49 +610,53 @@ class _PlayerPageState extends State<PlayerPage> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                controller: scrollController, // Associer le controller
-                itemCount: currentPagePlayers.length,
-                itemBuilder: (context, index) {
-                  return PlayerCard(player: currentPagePlayers[index]);
-                },
-              ),
+              child: filteredPlayers.isEmpty
+                  ? Center(child: Text('Aucun joueur ne correspond à la recherche'))
+                  : ListView.builder(
+                      controller: scrollController,
+                      itemCount: currentPagePlayers.length,
+                      itemBuilder: (context, index) {
+                        return PlayerCard(player: currentPagePlayers[index]);
+                      },
+                    ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back),
-                    onPressed: currentPage > 0
-                        ? () {
-                            setState(() {
-                              currentPage--;
-                            });
-                            scrollController.animateTo(0,
-                                duration: Duration(milliseconds: 300),
-                                curve: Curves.easeOut);
-                          }
-                        : null,
-                  ),
-                  Text("Page ${currentPage + 1} de $totalPages"),
-                  IconButton(
-                    icon: Icon(Icons.arrow_forward),
-                    onPressed: currentPage < totalPages - 1
-                        ? () {
-                            setState(() {
-                              currentPage++;
-                            });
-                            scrollController.animateTo(0,
-                                duration: Duration(milliseconds: 300),
-                                curve: Curves.easeOut);
-                          }
-                        : null,
-                  ),
-                ],
+            // Affichage de la pagination uniquement si des résultats existent
+            if (filteredPlayers.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back),
+                      onPressed: currentPage > 0
+                          ? () {
+                              setState(() {
+                                currentPage--;
+                              });
+                              scrollController.animateTo(0,
+                                  duration: Duration(milliseconds: 300),
+                                  curve: Curves.easeOut);
+                            }
+                          : null,
+                    ),
+                    Text("Page ${currentPage + 1} de $totalPages"),
+                    IconButton(
+                      icon: Icon(Icons.arrow_forward),
+                      onPressed: currentPage < totalPages - 1
+                          ? () {
+                              setState(() {
+                                currentPage++;
+                              });
+                              scrollController.animateTo(0,
+                                  duration: Duration(milliseconds: 300),
+                                  curve: Curves.easeOut);
+                            }
+                          : null,
+                    ),
+                  ],
+                ),
               ),
-            ),
           ],
         );
       },
