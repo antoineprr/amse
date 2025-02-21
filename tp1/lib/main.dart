@@ -170,7 +170,7 @@ class _HomePageState extends State<HomePage> {
       List<PlayerStats> players = data.map((json) => PlayerStats.fromJson(json)).toList();
       players.sort((a, b) => ((b.points / b.game).compareTo(a.points / a.game)));
       setState(() {
-        topPlayers = players.take(4).toList();
+        topPlayers = players.take(10).toList();
       });
     } catch (e) {
       print('Erreur lors du chargement des images pour le carousel: $e');
@@ -235,6 +235,18 @@ class _HomePageState extends State<HomePage> {
                               'assets/images/players/${player.imageFileName}',
                               fit: BoxFit.contain,
                               alignment: Alignment.topCenter,
+                              frameBuilder: (BuildContext context, Widget child, int? frame, bool wasSynchronouslyLoaded) {
+                                if (wasSynchronouslyLoaded) return child;
+                                return frame == null
+                                    ? Container(
+                                        width: 50,
+                                        height: 50,
+                                        child: Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      )
+                                    : child;
+                              },
                             ),
                           ),
                           SizedBox(height: 8),
@@ -445,11 +457,20 @@ class _PlayerPageState extends State<PlayerPage> {
   String searchText = "";
   final searchController = TextEditingController();
   String selectedSortMetric = "PPG";
+  int currentPage = 0;
+  final int itemsPerPage = 100;
+  final ScrollController scrollController = ScrollController(); // Ajout du controller
 
   @override
   void initState() {
     super.initState();
     futureStats = loadStats();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   Future<List<PlayerStats>> loadStats() async {
@@ -494,6 +515,15 @@ class _PlayerPageState extends State<PlayerPage> {
                 player.player.toLowerCase().contains(searchText.toLowerCase()))
             .toList();
 
+        int totalPages = (filteredPlayers.length / itemsPerPage).ceil();
+        if (currentPage >= totalPages) {
+          currentPage = totalPages - 1;
+        }
+        final currentPagePlayers = filteredPlayers
+            .skip(currentPage * itemsPerPage)
+            .take(itemsPerPage)
+            .toList();
+
         return Column(
           children: [
             Padding(
@@ -511,14 +541,18 @@ class _PlayerPageState extends State<PlayerPage> {
                             searchController.clear();
                             setState(() {
                               searchText = "";
+                              currentPage = 0;
                             });
+                            scrollController.jumpTo(0);
                           },
                         ),
                       ),
                       onChanged: (value) {
                         setState(() {
                           searchText = value;
+                          currentPage = 0;
                         });
+                        scrollController.jumpTo(0);
                       },
                     ),
                   ),
@@ -543,7 +577,9 @@ class _PlayerPageState extends State<PlayerPage> {
                           onChanged: (value) {
                             setState(() {
                               selectedSortMetric = value!;
+                              currentPage = 0;
                             });
+                            scrollController.jumpTo(0);
                           },
                           isExpanded: true,
                         ),
@@ -555,10 +591,46 @@ class _PlayerPageState extends State<PlayerPage> {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: filteredPlayers.length,
+                controller: scrollController, // Associer le controller
+                itemCount: currentPagePlayers.length,
                 itemBuilder: (context, index) {
-                  return PlayerCard(player: filteredPlayers[index]);
+                  return PlayerCard(player: currentPagePlayers[index]);
                 },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: currentPage > 0
+                        ? () {
+                            setState(() {
+                              currentPage--;
+                            });
+                            scrollController.animateTo(0,
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeOut);
+                          }
+                        : null,
+                  ),
+                  Text("Page ${currentPage + 1} de $totalPages"),
+                  IconButton(
+                    icon: Icon(Icons.arrow_forward),
+                    onPressed: currentPage < totalPages - 1
+                        ? () {
+                            setState(() {
+                              currentPage++;
+                            });
+                            scrollController.animateTo(0,
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeOut);
+                          }
+                        : null,
+                  ),
+                ],
               ),
             ),
           ],
@@ -598,6 +670,18 @@ class _PlayerCardState extends State<PlayerCard> {
           width: 50,
           height: 50,
           fit: BoxFit.cover,
+          frameBuilder: (BuildContext context, Widget child, int? frame, bool wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded) return child;
+            return frame == null
+                ? Container(
+                    width: 50,
+                    height: 50,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : child;
+          },
         ),
         title: Text(
           widget.player.player,

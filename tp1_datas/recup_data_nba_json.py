@@ -9,7 +9,7 @@ leaders = leagueleaders.LeagueLeaders(season='2023-24')
 leaders_df = leaders.get_data_frames()[0]
 
 # Sélectionner les 20 premiers joueurs
-top_20_ppg = leaders_df.head(100)
+top_20_ppg = leaders_df.head(500)
 
 # Convertir le DataFrame en dictionnaire
 top_20_ppg_dict = top_20_ppg.to_dict(orient='records')
