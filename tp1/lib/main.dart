@@ -87,7 +87,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Afficher une vue de chargement tant que le logo n'est pas disponible
     if (!_logoLoaded) {
       return Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -477,7 +476,7 @@ class _PlayerPageState extends State<PlayerPage> {
   String selectedSortMetric = "PPG";
   int currentPage = 0;
   final int itemsPerPage = 100;
-  final ScrollController scrollController = ScrollController(); // Ajout du controller
+  final ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
@@ -534,7 +533,7 @@ class _PlayerPageState extends State<PlayerPage> {
             .toList();
 
         int totalPages = (filteredPlayers.length / itemsPerPage).ceil();
-        if (totalPages == 0) totalPages = 1; // pour éviter des problèmes d'index
+        if (totalPages == 0) totalPages = 1; 
         if (currentPage >= totalPages) {
           currentPage = totalPages - 1;
         }
@@ -545,7 +544,6 @@ class _PlayerPageState extends State<PlayerPage> {
 
         return Column(
           children: [
-            // Options de filtrage toujours visibles
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -620,7 +618,6 @@ class _PlayerPageState extends State<PlayerPage> {
                       },
                     ),
             ),
-            // Affichage de la pagination uniquement si des résultats existent
             if (filteredPlayers.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.all(8.0),
