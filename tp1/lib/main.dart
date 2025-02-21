@@ -155,19 +155,20 @@ class _HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Précharger l'image du logo
     precacheImage(AssetImage('assets/images/logo.png'), context);
-    // Précharger toutes les images des players et des teams
     _precacheImagesFromDirectory('assets/images/players/');
     _precacheImagesFromDirectory('assets/images/teams/');
   }
 
   void _precacheImagesFromDirectory(String directory) async {
-    final manifestContent = await DefaultAssetBundle.of(context).loadString('AssetManifest.json');
+    final manifestContent =
+        await DefaultAssetBundle.of(context).loadString('AssetManifest.json');
     final Map<String, dynamic> manifestMap = json.decode(manifestContent);
-    final imagePaths = manifestMap.keys.where((key) => key.startsWith(directory)).toList();
+    final imagePaths =
+        manifestMap.keys.where((key) => key.startsWith(directory)).toList();
 
     for (final path in imagePaths) {
+      if (path.endsWith('.svg')) continue;
       precacheImage(AssetImage(path), context);
     }
   }
@@ -242,7 +243,6 @@ class PlayerStats {
       oreb: json['OREB'],
       dreb: json['DREB'],
       pf: json['PF'],
-      // ignore: prefer_interpolation_to_compose_strings
       imageFileName: json['PLAYER_ID'].toString() + '.png',
       liked: false,
     );
@@ -287,6 +287,8 @@ class PlayerPage extends StatefulWidget {
 
 class _PlayerPageState extends State<PlayerPage> {
   late Future<List<PlayerStats>> futureStats;
+  String searchText = "";
+  final searchController = TextEditingController();
 
   @override
   void initState() {
@@ -320,11 +322,45 @@ class _PlayerPageState extends State<PlayerPage> {
 
         final players = snapshot.data!;
 
-        return ListView.builder(
-          itemCount: players.length,
-          itemBuilder: (context, index) {
-            return PlayerCard(player: players[index]);
-          },
+        List<PlayerStats> filteredPlayers = players
+            .where((player) =>
+                player.player.toLowerCase().contains(searchText.toLowerCase()))
+            .toList();
+
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  labelText: "Rechercher un joueur",
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.clear),
+                    onPressed: () {
+                      searchController.clear();
+                      setState(() {
+                        searchText = "";
+                      });
+                    },
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    searchText = value;
+                  });
+                },
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: filteredPlayers.length,
+                itemBuilder: (context, index) {
+                  return PlayerCard(player: filteredPlayers[index]);
+                },
+              ),
+            ),
+          ],
         );
       },
     );
