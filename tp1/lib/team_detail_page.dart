@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tp1/stats_class.dart';
-import 'package:tp1/player_detail_page.dart'; // added import
+import 'package:tp1/player_detail_page.dart';
 
 class TeamDetailPage extends StatelessWidget {
   final Team team;
@@ -137,7 +137,6 @@ class TeamDetailPage extends StatelessWidget {
                           int crossAxisCount;
                           double width = constraints.maxWidth;
                           
-                          // Définir le nombre de colonnes selon la largeur
                           if (width > 800) {
                             crossAxisCount = 5;
                           } else if (width > 600) {
@@ -146,7 +145,6 @@ class TeamDetailPage extends StatelessWidget {
                             crossAxisCount = 3;
                           }
                           
-                          // Calculer la largeur de chaque case
                           double spacing = 4;
                           double totalSpacing = (crossAxisCount - 1) * spacing;
                           double cellWidth = (width - totalSpacing) / crossAxisCount;
@@ -170,7 +168,7 @@ class TeamDetailPage extends StatelessWidget {
                                     ClipOval(
                                       child: Image.asset(
                                         'assets/images/players/${player.imageFileName}',
-                                        width: cellWidth * 0.8, // 80% de la largeur de la case
+                                        width: cellWidth * 0.8,
                                         height: cellWidth * 0.8,
                                         fit: BoxFit.cover,
                                       ),

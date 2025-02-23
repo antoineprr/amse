@@ -18,7 +18,7 @@ class AboutPage extends StatelessWidget {
           ),
           SizedBox(height: 24),
           Text(
-            "Cette application présente des statistiques de la saison régulière 2023-24 de la NBA.",
+            "Cette application présente des statistiques de la saison régulière 2024-25 de la NBA.",
             style: Theme.of(context).textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),
@@ -82,15 +82,17 @@ class AboutPage extends StatelessWidget {
           .textTheme
           .titleMedium
           ?.copyWith(fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 16),
+          Text(
+            "Les données proviennent de nba_api (API non-officielle de la NBA).\nLes images proviennent du site web de la NBA.\nStatistiques pour la saison régulière NBA 2024-2025, utilisées à des fins privées.",
+            style: Theme.of(context).textTheme.bodyMedium,
+            textAlign: TextAlign.center,
           ),
           SizedBox(height: 16),
           Text(
             "Développé par Antoine Poirier dans le cadre de l'UV AMSE.",
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          SizedBox(height: 16),
-          Text(
-            "Les données proviennent de nba_api (API non-officielle de la NBA).\nLes images proviennent du site web de la NBA.\nStatistiques pour la saison régulière NBA 2023-2024, utilisées à des fins privées.",
             style: Theme.of(context).textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),

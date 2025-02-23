@@ -2,8 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:tp1/card_class.dart';
 import 'package:tp1/stats_class.dart';
+import 'package:tp1/team_detail_page.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class TeamPage extends StatefulWidget {
   @override
@@ -45,10 +46,38 @@ class _TeamPageState extends State<TeamPage> {
 
         final teams = snapshot.data!;
 
-        return ListView.builder(
+        return GridView.builder(
+          padding: const EdgeInsets.all(16),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: MediaQuery.of(context).size.width > 800 ? 5 : 3,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+          ),
           itemCount: teams.length,
           itemBuilder: (context, index) {
-            return TeamCard(team: teams[index]);
+            final team = teams[index];
+            return GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => TeamDetailPage(team: team),
+                );
+              },
+              child: Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SvgPicture.asset(
+                    'assets/images/teams/${team.id}.svg',
+                    fit: BoxFit.contain,
+                    placeholderBuilder: (context) => CircularProgressIndicator(),
+                  ),
+                ),
+              ),
+            );
           },
         );
       },

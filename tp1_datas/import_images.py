@@ -21,21 +21,27 @@ def download_image(url, player_name, player_id, save_directory):
     if not url:
         print(f"No image URL for player {player_name}")
         return
-    
-    # Créer le répertoire s'il n'existe pas
-    if not os.path.exists(save_directory):
-        os.makedirs(save_directory)
-    
-    # Obtenir le nom du fichier à partir de l'URL
-    file_name = f"{player_id}.png"  # Remplace les espaces par des underscores
+
+    # Vérifier si l'image existe déjà dans le dossier "player_images"
+    file_name = f"{player_id}.png"
     file_path = os.path.join(save_directory, file_name)
     
+    if os.path.exists(file_path):
+        print(f"Image already exists for player {player_name} at {file_path}")
+        return
+
     # Télécharger l'image
     response = requests.get(url)
     if response.status_code == 200:
-        with open(file_path, 'wb') as file:
+        # Créer le nouveau répertoire pour sauvegarder l'image s'il n'existe pas
+        new_directory = 'new_player_images'
+        if not os.path.exists(new_directory):
+            os.makedirs(new_directory)
+        
+        new_file_path = os.path.join(new_directory, file_name)
+        with open(new_file_path, 'wb') as file:
             file.write(response.content)
-        print(f"Image saved for player {player_name} at {file_path}")
+        print(f"Image saved for player {player_name} at {new_file_path}")
     else:
         print(f"Failed to download image for player {player_name}")
 

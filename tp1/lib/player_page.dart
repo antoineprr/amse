@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:tp1/card_class.dart';
+import 'package:tp1/player_card.dart';
 import 'package:tp1/stats_class.dart';
 
 class PlayerPage extends StatefulWidget {

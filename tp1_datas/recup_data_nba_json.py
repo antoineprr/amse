@@ -3,7 +3,7 @@ import pandas as pd
 import json
 
 # Récupérer les leaders de la ligue pour la saison 2023-24
-leaders = leagueleaders.LeagueLeaders(season='2023-24')
+leaders = leagueleaders.LeagueLeaders(season='2024-25')
 
 # Obtenir les données sous forme de DataFrame
 leaders_df = leaders.get_data_frames()[0]

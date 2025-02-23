@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tp1/card_class.dart';
+import 'package:tp1/player_card.dart';
 import 'package:tp1/main.dart';
 
 class FavPage extends StatelessWidget {

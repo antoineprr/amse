@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tp1/main.dart';
 import 'package:tp1/player_detail_page.dart';
 import 'package:tp1/stats_class.dart';
-import 'package:tp1/team_detail_page.dart';
 
 class PlayerCard extends StatefulWidget {
   final PlayerStats player;
@@ -79,43 +77,6 @@ class _PlayerCardState extends State<PlayerCard> {
                 setState(() {});
               },
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class TeamCard extends StatelessWidget {
-  final Team team;
-
-  TeamCard({required this.team});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return TeamDetailPage(team: team);
-            },
-          );
-        },
-        leading: SvgPicture.asset(
-          'assets/images/teams/${team.id}.svg',
-          width: 50,
-          height: 50,
-          placeholderBuilder: (context) => CircularProgressIndicator(),
-        ),
-        title: Text(team.fullName),
-        subtitle: Text('${team.city}, ${team.state}'),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Année de création : ${team.yearFounded}'),
-            Text('Abréviation : ${team.abbreviation}'),
           ],
         ),
       ),
