@@ -84,7 +84,7 @@ class PlayerDetailPage extends StatelessWidget {
                   return Row(
                     children: [
                       SvgPicture.asset(
-                        'images/teams/${teamInfo['id']}.svg',
+                        'assets/images/teams/${teamInfo['id']}.svg',
                         height: 60,
                         width: 60,
                       ),
