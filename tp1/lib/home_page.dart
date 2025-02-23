@@ -1,12 +1,11 @@
-
-
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:tp1/player_detail_page.dart';
 import 'package:tp1/stats_class.dart';
+import 'package:tp1/team_detail_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,6 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<PlayerStats> topPlayers = [];
+  List<Team> topTeams = [];
   int _currentPage = 0;
   late PageController _pageController;
 
@@ -33,6 +33,13 @@ class _HomePageState extends State<HomePage> {
       players.sort((a, b) => ((b.points / b.game).compareTo(a.points / a.game)));
       setState(() {
         topPlayers = players.take(10).toList();
+      });
+
+      final String teamResponse = await rootBundle.loadString('assets/api/nbaTeams.json');
+      final List<dynamic> teamData = json.decode(teamResponse);
+      List<Team> teams = teamData.map((json) => Team.fromJson(json)).toList();
+      setState(() {
+        topTeams = teams.take(10).toList();
       });
     } catch (e) {
       print('Erreur lors du chargement des images pour le carousel: $e');
@@ -179,6 +186,113 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget buildTeamCarousel() {
+  final double carouselHeight = MediaQuery.of(context).size.width > 800 ? 300 : 200;
+
+  if (topTeams.isEmpty) {
+    return SizedBox(
+      height: carouselHeight,
+      child: Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  return Column(
+    children: [
+      SizedBox(
+        height: carouselHeight,
+        child: Stack(
+          children: [
+            PageView.builder(
+              controller: _pageController,
+              itemCount: topTeams.length,
+              onPageChanged: _onPageChanged,
+              itemBuilder: (context, index) {
+                final team = topTeams[index];
+                return GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => TeamDetailPage(team: team),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        SvgPicture.asset(
+                            'assets/images/teams/${team.id}.svg',
+                            height: 50,
+                            width: 50,
+                            placeholderBuilder: (context) => CircularProgressIndicator(),
+                          ),
+                        SizedBox(height: 8),
+                        Text(
+                          team.fullName,
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            Positioned(
+              left: 0,
+              top: carouselHeight / 2 - 20,
+              child: IconButton(
+                icon: Icon(Icons.arrow_back, size: 40),
+                onPressed: () {
+                  int previousPage = _currentPage - 1;
+                  if (previousPage < 0) {
+                    previousPage = topTeams.length - 1;
+                  }
+                  _pageController.animateToPage(
+                    previousPage,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                },
+              ),
+            ),
+            Positioned(
+              right: 0,
+              top: carouselHeight / 2 - 20,
+              child: IconButton(
+                icon: Icon(Icons.arrow_forward, size: 40),
+                onPressed: () {
+                  int nextPage = _currentPage + 1;
+                  if (nextPage >= topTeams.length) {
+                    nextPage = 0;
+                  }
+                  _pageController.animateToPage(
+                    nextPage,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(topTeams.length, (index) {
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 8),
+            width: _currentPage == index ? 12 : 8,
+            height: _currentPage == index ? 12 : 8,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: _currentPage == index ? Colors.blueAccent : Colors.grey,
+            ),
+          );
+        }),
+      ),
+    ],
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -192,6 +306,15 @@ class _HomePageState extends State<HomePage> {
         ),
         const SizedBox(height: 16),
         buildCarousel(),
+        const SizedBox(height: 16),
+        Center(
+          child: Text(
+            'Équipes populaires',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+        ),
+        const SizedBox(height: 16),
+        buildTeamCarousel(),
       ],
     );
   }

@@ -96,11 +96,11 @@ class TeamCard extends StatelessWidget {
     return Card(
       child: ListTile(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => TeamDetailPage(team: team),
-            ),
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return TeamDetailPage(team: team);
+            },
           );
         },
         leading: SvgPicture.asset(
