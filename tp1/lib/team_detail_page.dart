@@ -124,7 +124,7 @@ class TeamDetailPage extends StatelessWidget {
                       ),
                       SizedBox(height: 16),
                       Text(
-                        'Joueurs de l\'équipe',
+                        'Joueurs',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
