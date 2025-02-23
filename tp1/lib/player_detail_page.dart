@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tp1/stats_class.dart';
 import 'dart:convert';
 import 'main.dart';
-import 'package:provider/provider.dart'; // <-- Ajout de l'import nécessaire
+import 'package:provider/provider.dart';
 
 class PlayerDetailPage extends StatelessWidget {
   final PlayerStats player;
