@@ -19,8 +19,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_lints: ^2.0.0
+  flutter_launcher_icons: ^0.10.0
 
 flutter:
   uses-material-design: true
@@ -30,3 +30,8 @@ flutter:
     - assets/images/logo.png
     - assets/api/nba2024stats.json
     - assets/api/nbaTeams.json
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo_appli.png"
