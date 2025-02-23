@@ -50,6 +50,8 @@ class _PlayerCardState extends State<PlayerCard> {
         title: Text(
           widget.player.player,
           style: TextStyle(fontSize: 14.0),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
           widget.player.team,

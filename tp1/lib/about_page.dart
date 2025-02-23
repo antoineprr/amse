@@ -18,7 +18,7 @@ class AboutPage extends StatelessWidget {
           ),
           SizedBox(height: 24),
           Text(
-            "Cette application présente des statistiques de la saison régulière 2024-25 de la NBA.",
+            "Cette application présente les joueurs et équipes de la saison régulière 2024-25 de la NBA.",
             style: Theme.of(context).textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),
@@ -86,7 +86,7 @@ class AboutPage extends StatelessWidget {
           ),
           SizedBox(height: 16),
           Text(
-            "Les données proviennent de nba_api (API non-officielle de la NBA).\nLes images proviennent du site web de la NBA.\nStatistiques pour la saison régulière NBA 2024-2025, utilisées à des fins privées.",
+            "Les données proviennent de nba_api (API non-officielle de la NBA).\nLes images proviennent du site web de la NBA.\nStatistiques pour la saison régulière NBA 2024-2025, utilisées à des fins personnelles.",
             style: Theme.of(context).textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),

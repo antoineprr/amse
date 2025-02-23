@@ -124,11 +124,11 @@ class _MyHomePageState extends State<MyHomePage> {
           color: Colors.white,
           child: TabBar(
             tabs: [
-              Tab(icon: Icon(Icons.home), text: 'Home'),
-              Tab(icon: Icon(Icons.person), text: 'Players'),
-              Tab(icon: Icon(Icons.group), text: 'Teams'),
-              Tab(icon: Icon(Icons.star), text: 'Favorites'),
-              Tab(icon: Icon(Icons.info), text: 'About'),
+              Tab(icon: Icon(Icons.home), text: 'Accueil'),
+              Tab(icon: Icon(Icons.person), text: 'Joueurs'),
+              Tab(icon: Icon(Icons.group), text: 'Équipes'),
+              Tab(icon: Icon(Icons.star), text: 'Favoris'),
+              Tab(icon: Icon(Icons.info), text: 'À propos'),
             ],
             indicatorColor: Colors.white,
           ),
