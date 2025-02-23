@@ -75,7 +75,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var selectedIndex = 0;
   bool _logoLoaded = false;
 
   @override
@@ -96,71 +95,44 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
 
-    Widget page;
-    switch (selectedIndex) {
-      case 0:
-        page = HomePage();
-        break;
-      case 1:
-        page = PlayerPage();
-        break;
-      case 2:
-        page = TeamPage();
-        break;
-      case 3:
-        page = FavPage();
-        break;
-      case 4:
-        page = AboutPage();
-        break;
-      default:
-        throw UnimplementedError('no widget for $selectedIndex');
-    }
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromRGBO(29, 66, 138, 1),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return DefaultTabController(
+      length: 5,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color.fromRGBO(29, 66, 138, 1),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/images/logo.png',
+                height: 40,
+              ),
+              SizedBox(width: 10),
+            ],
+          ),
+        ),
+        body: TabBarView(
           children: [
-            Image.asset(
-              'assets/images/logo.png',
-              height: 40,
-            ),
-            SizedBox(width: 10),
+            HomePage(),
+            PlayerPage(),
+            TeamPage(),
+            FavPage(),
+            AboutPage(),
           ],
         ),
-      ),
-      body: page,
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: selectedIndex,
-        onTap: (index) {
-          setState(() {
-            selectedIndex = index;
-          });
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+        bottomNavigationBar: Material(
+          color: Colors.white,
+          child: TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.home), text: 'Home'),
+              Tab(icon: Icon(Icons.person), text: 'Players'),
+              Tab(icon: Icon(Icons.group), text: 'Teams'),
+              Tab(icon: Icon(Icons.star), text: 'Favorites'),
+              Tab(icon: Icon(Icons.info), text: 'About'),
+            ],
+            indicatorColor: Colors.white,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Players',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Teams',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.info),
-            label: 'About',
-          ),
-        ],
+        ),
       ),
     );
   }

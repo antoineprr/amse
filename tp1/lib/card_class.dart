@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tp1/main.dart';
 import 'package:tp1/player_detail_page.dart';
 import 'package:tp1/stats_class.dart';
+import 'package:tp1/team_detail_page.dart';
 
 class PlayerCard extends StatefulWidget {
   final PlayerStats player;
@@ -94,6 +95,14 @@ class TeamCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TeamDetailPage(team: team),
+            ),
+          );
+        },
         leading: SvgPicture.asset(
           'assets/images/teams/${team.id}.svg',
           width: 50,
