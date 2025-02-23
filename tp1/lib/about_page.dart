@@ -37,7 +37,7 @@ class AboutPage extends StatelessWidget {
             {"abbr": "MPG", "desc": "Minutes Per Game - Moyenne de minutes jouées par match"},
             {"abbr": "PPG", "desc": "Points Per Game - Moyenne de points marqués par match"},
             {"abbr": "APG", "desc": "Assists Per Game - Moyenne de passes décisives par match"},
-            {"abbr": "RPG", "desc": "Rebounds Per Game - Moyenne de rebonds attrapés par match"},
+            {"abbr": "RPG", "desc": "Rebounds Per Game - Moyenne de rebonds par match"},
             {"abbr": "FG%", "desc": "Field Goal Percentage - Pourcentage de tirs réussis"},
             {"abbr": "3P%", "desc": "Three-Point Percentage - Pourcentage de tirs à trois points réussis"},
             {"abbr": "FT%", "desc": "Free Throw Percentage - Pourcentage de lancers francs réussis"},

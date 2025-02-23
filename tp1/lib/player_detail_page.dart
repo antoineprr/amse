@@ -46,7 +46,7 @@ class PlayerDetailPage extends StatelessWidget {
 
   Widget _buildTeamInfo(BuildContext context) {
     return FutureBuilder<String>(
-      future: DefaultAssetBundle.of(context).loadString('api/nbaTeams.json'),
+      future: DefaultAssetBundle.of(context).loadString('assets/api/nbaTeams.json'),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final List<dynamic> teams = json.decode(snapshot.data!);
@@ -62,7 +62,7 @@ class PlayerDetailPage extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SvgPicture.asset(
-                      'images/teams/${teamInfo['id']}.svg',
+                      'assets/images/teams/${teamInfo['id']}.svg',
                       height: 60,
                       width: 60,
                       ),

@@ -456,7 +456,7 @@ class _HomePageState extends State<HomePage> {
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   buildTeamCarousel(),
                 ],
               ),
