@@ -9,8 +9,11 @@ import 'package:tp1/stats_class.dart';
 import 'package:tp1/team_page.dart';
 import 'package:tp1/fav_page.dart';
 import 'package:tp1/about_page.dart';
+import 'package:tp1/utils.dart'; 
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await loadAssetManifest();
   runApp(MyApp());
 }
 
@@ -81,6 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     precacheImage(AssetImage('assets/images/logo.png'), context).then((_) {
+      if (!mounted) return;
       setState(() {
         _logoLoaded = true;
       });

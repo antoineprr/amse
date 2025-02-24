@@ -1,3 +1,5 @@
+import 'package:tp1/utils.dart';
+
 class PlayerStats {
   final int playerId;
   final String player;
@@ -60,7 +62,12 @@ class PlayerStats {
       oreb: json['OREB'],
       dreb: json['DREB'],
       pf: json['PF'],
-      imageFileName: json['PLAYER_ID'].toString() + '.png',
+      imageFileName: (() {
+        String imageName = json['PLAYER_ID'].toString() + '.png';
+        return (checkAsset('assets/images/players/' + imageName))
+        ? imageName
+        : 'default.png';
+      })(),
       liked: false,
     );
   }
