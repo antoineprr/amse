@@ -1,6 +1,6 @@
 # tp1 - Stats don't lie (SdL)
 
-Ce projet Flutter est une application de statistiques NBA. Il présente des informations détaillées sur les joueurs et les équipes de la saison régulière 2024-25, avec des fonctionnalités de recherche et de favoris pour faciliter la consultation des performances.
+Ce projet Flutter est une application de statistiques NBA. Elle présente des informations détaillées sur les joueurs et les équipes de la saison régulière 2024-25, avec des fonctionnalités de recherche et de favoris pour faciliter la consultation des performances. Disponible sur les plateformes web, Windows, Linux, iOS et Android, l'application est particulièrement optimisée pour les appareils mobiles.
 
 ## Pages
 
