@@ -105,36 +105,51 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
           backgroundColor: Color.fromRGBO(29, 66, 138, 1),
           title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/logo.png',
-                height: 40,
-              ),
-              SizedBox(width: 10),
-            ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            'assets/images/logo.png',
+            height: 40,
+          ),
+          SizedBox(width: 10),
+        ],
           ),
         ),
         body: TabBarView(
           children: [
-            HomePage(),
-            PlayerPage(),
-            TeamPage(),
-            FavPage(),
-            AboutPage(),
+        HomePage(),
+        PlayerPage(),
+        TeamPage(),
+        FavPage(),
+        AboutPage(),
           ],
         ),
         bottomNavigationBar: Material(
           color: Colors.white,
           child: TabBar(
-            tabs: [
-              Tab(icon: Icon(Icons.home), text: 'Accueil'),
-              Tab(icon: Icon(Icons.person), text: 'Joueurs'),
-              Tab(icon: Icon(Icons.group), text: 'Équipes'),
-              Tab(icon: Icon(Icons.star), text: 'Favoris'),
-              Tab(icon: Icon(Icons.info), text: 'À propos'),
-            ],
-            indicatorColor: Colors.white,
+        tabs: [
+          Tab(
+            icon: Icon(Icons.home),
+            child: FittedBox(child: Text('Accueil')),
+          ),
+          Tab(
+            icon: Icon(Icons.person),
+            child: FittedBox(child: Text('Joueurs')),
+          ),
+          Tab(
+            icon: Icon(Icons.group),
+            child: FittedBox(child: Text('Équipes')),
+          ),
+          Tab(
+            icon: Icon(Icons.star),
+            child: FittedBox(child: Text('Favoris')),
+          ),
+          Tab(
+            icon: Icon(Icons.info),
+            child: FittedBox(child: Text('À propos')),
+          ),
+        ],
+        indicatorColor: Colors.white,
           ),
         ),
       ),
